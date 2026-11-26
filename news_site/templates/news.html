@@ -69,7 +69,17 @@
     </div>
 </footer>
 
-<!-- اسکریپت تبیسل (آدرس دقیق را از پنل خود کپی کنید) -->
-<script type="text/javascript" src="https://tablisel.com/api/script/loader.js"></script>
+<!-- اسکریپت اختصاصی تبیسل (MediaAd) -->
+<script type="text/javascript">
+    (function (){
+      const head = document.getElementsByTagName("head")[0];
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.async = true;
+      script.src = "https://s1.mediaad.org/serve/avanews.onrender.com/loader.js";
+      head.appendChild(script);
+    })();
+</script>
+
 </body>
 </html>
