@@ -27,12 +27,10 @@ async function refreshHotNews() {
 
 // ---- انیمیشن ورود کارت‌ها + عنوان داینامیک ----
 document.addEventListener('DOMContentLoaded', () => {
-    // برندینگ: عنوان تب را با AvaNews هماهنگ کن
     if (!document.title.includes('AvaNews')) {
         document.title = 'AvaNews | ' + document.title;
     }
 
-    // انیمیشن ورود کارت‌ها
     const cards = document.querySelectorAll('.news-card');
     cards.forEach((card, i) => {
         card.style.opacity = 0;
@@ -44,6 +42,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }, i * 80);
     });
 
-    // بروزرسانی دوره‌ای اخبار داغ
     setInterval(refreshHotNews, 30000);
 });
