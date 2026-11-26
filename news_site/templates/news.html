@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ news.title }} - سایت خبری</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <a href="{{ url_for('index') }}" class="back-link">⬅ بازگشت به صفحه اصلی</a>
+    <h1>📰 سایت خبری من</h1>
+</header>
+
+<div class="container">
+
+    <main class="main-col">
+        <article class="full-news">
+            <h1 class="article-title">{{ news.title }}</h1>
+            <div class="article-meta">
+                <span>📅 {{ news.date_str }}</span>
+                <span>👁 {{ view_count }} بازدید</span>
+            </div>
+            <div class="article-content">
+                {{ news.content | safe }}
+            </div>
+        </article>
+    </main>
+
+    <aside class="side-col">
+        <h2 class="section-title hot-title">🔥 اخبار داغ</h2>
+        <ul class="hot-list">
+            {% for h in hot_news %}
+            <li>
+                <a href="{{ url_for('news_detail', slug=h.slug) }}">
+                    <span class="hot-badge">{{ loop.index }}</span>
+                    <span class="hot-text">{{ h.title }}</span>
+                    <span class="hot-views">👁 {{ views.get(h.slug, 0) }}</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="empty">هنوز خبر داغی وجود ندارد</li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+</div>
+
+<footer>
+    <p>© 2024 سایت خبری - تمامی حقوق محفوظ است</p>
+</footer>
+
+</body>
+</html>

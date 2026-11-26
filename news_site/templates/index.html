@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>سایت خبری</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>📰 سایت خبری من</h1>
+    <p class="subtitle">آخرین اخبار و داغ‌ترین‌ها</p>
+</header>
+
+<div class="container">
+
+    <!-- ستون اصلی اخبار -->
+    <main class="main-col">
+        <h2 class="section-title">آخرین اخبار</h2>
+
+        <div class="news-grid" id="newsGrid">
+            {% for n in news_list %}
+            <a class="news-card" href="{{ url_for('news_detail', slug=n.slug) }}">
+                {% if n.image %}
+                <div class="card-img">
+                    <img src="{{ n.image }}" alt="{{ n.title }}">
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h3>{{ n.title }}</h3>
+                    <p class="summary">{{ n.summary[:150] }}{% if n.summary|length > 150 %}...{% endif %}</p>
+                    <div class="card-footer">
+                        <span class="date">📅 {{ n.date_str }}</span>
+                        <span class="views">👁 {{ views.get(n.slug, 0) }}</span>
+                    </div>
+                </div>
+            </a>
+            {% else %}
+            <p class="empty">هنوز خبری ثبت نشده است.</p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- ستون کنار: اخبار داغ -->
+    <aside class="side-col">
+        <h2 class="section-title hot-title">🔥 اخبار داغ</h2>
+        <ul class="hot-list" id="hotList">
+            {% for h in hot_news %}
+            <li>
+                <a href="{{ url_for('news_detail', slug=h.slug) }}">
+                    <span class="hot-badge">{{ loop.index }}</span>
+                    <span class="hot-text">{{ h.title }}</span>
+                    <span class="hot-views">👁 {{ views.get(h.slug, 0) }}</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="empty">هنوز خبر داغی وجود ندارد</li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+</div>
+
+<footer>
+    <p>© 2024 سایت خبری - تمامی حقوق محفوظ است</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
