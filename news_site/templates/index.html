@@ -47,8 +47,15 @@
         </div>
     </main>
 
-    <!-- ستون کنار: اخبار داغ -->
+    <!-- ستون کنار: اخبار داغ و تبلیغات -->
     <aside class="side-col">
+        
+        <!-- جایگاه تبلیغاتی تبیسل -->
+        <div class="ad-box">
+            <span class="ad-label">تبلیغات</span>
+            <div id="mediaad-X2V91"></div>
+        </div>
+
         <h2 class="section-title hot-title">🔥 اخبار داغ</h2>
         <ul class="hot-list" id="hotList">
             {% for h in hot_news %}
@@ -74,6 +81,8 @@
     </div>
 </footer>
 
+<!-- اسکریپت تبیسل (آدرس دقیق را از پنل خود کپی کنید) -->
+<script type="text/javascript" src="https://tablisel.com/api/script/loader.js"></script>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
