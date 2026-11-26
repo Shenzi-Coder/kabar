@@ -7,13 +7,19 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+# ---------- برندینگ ----------
+@app.context_processor
+def inject_brand():
+    return {
+        "brand": "AvaNews",
+        "brand_tagline": "آخرین اخبار و داغ‌ترین‌ها",
+    }
+
 # ---------- مسیرها (قابل تنظیم با Environment Variables) ----------
 NEWS_DIR = os.environ.get("NEWS_DIR", "news")
 VIEWS_FILE = os.environ.get("VIEWS_FILE", "views.json")
 
-# اطمینان از وجود پوشه اخبار
 os.makedirs(NEWS_DIR, exist_ok=True)
-
 
 # ---------- مدیریت بازدیدها ----------
 def load_views():
@@ -25,7 +31,6 @@ def load_views():
             return {}
     return {}
 
-
 def save_views(views):
     try:
         with open(VIEWS_FILE, "w", encoding="utf-8") as f:
@@ -33,13 +38,11 @@ def save_views(views):
     except IOError as e:
         print(f"خطا در ذخیره بازدیدها: {e}")
 
-
 def increment_view(slug):
     views = load_views()
     views[slug] = views.get(slug, 0) + 1
     save_views(views)
     return views[slug]
-
 
 # ---------- پارس کردن فایل خبر ----------
 def parse_news_file(filename):
@@ -49,7 +52,6 @@ def parse_news_file(filename):
 
     soup = BeautifulSoup(raw, "html.parser")
 
-    # عنوان: اول h1، بعد title، بعد نام فایل
     title = filename
     h1 = soup.find("h1")
     if h1 and h1.get_text(strip=True):
@@ -57,17 +59,14 @@ def parse_news_file(filename):
     elif soup.title and soup.title.string:
         title = soup.title.string.strip()
 
-    # خلاصه: اولین پاراگراف
     p = soup.find("p")
     summary = p.get_text(strip=True) if p else ""
 
-    # تصویر: اولین img
     img = soup.find("img")
     image = None
     if img and img.has_attr("src"):
         image = img["src"]
 
-    # تاریخ: از نام فایل YYYY-MM-DD-xxx.html، وگرنه تاریخ تغییر فایل
     m = re.match(r"(\d{4}-\d{2}-\d{2})", filename)
     if m:
         try:
@@ -88,7 +87,6 @@ def parse_news_file(filename):
         "content": str(soup.body) if soup.body else str(soup),
     }
 
-
 # ---------- گرفتن همه اخبار ----------
 def get_all_news():
     if not os.path.exists(NEWS_DIR):
@@ -103,7 +101,6 @@ def get_all_news():
     news_list.sort(key=lambda x: x["date"], reverse=True)
     return news_list
 
-
 # ---------- محاسبه اخبار داغ ----------
 def get_hot_news(news_list, views, limit=5):
     hot = sorted(
@@ -112,7 +109,6 @@ def get_hot_news(news_list, views, limit=5):
         reverse=True
     )[:limit]
     return [n for n in hot if views.get(n["slug"], 0) > 0]
-
 
 # ---------- روت‌ها ----------
 @app.route("/")
@@ -127,10 +123,8 @@ def index():
         views=views,
     )
 
-
 @app.route("/news/<slug>")
 def news_detail(slug):
-    # جلوگیری از path traversal
     if "/" in slug or "\\" in slug or ".." in slug:
         abort(404)
 
@@ -154,7 +148,6 @@ def news_detail(slug):
         views=views,
     )
 
-
 # ---------- API ----------
 @app.route("/api/news")
 def api_news():
@@ -170,7 +163,6 @@ def api_news():
         for n in news_list
     ])
 
-
 @app.route("/api/hot")
 def api_hot():
     news_list = get_all_news()
@@ -185,12 +177,9 @@ def api_hot():
         for n in hot
     ])
 
-
-# ---------- Health check برای Render ----------
 @app.route("/health")
 def health():
     return {"status": "ok"}, 200
-
 
 # ---------- اجرا ----------
 if __name__ == "__main__":
