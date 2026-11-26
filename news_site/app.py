@@ -7,19 +7,32 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
-NEWS_DIR = "news"
-VIEWS_FILE = "views.json"
+# ---------- مسیرها (قابل تنظیم با Environment Variables) ----------
+NEWS_DIR = os.environ.get("NEWS_DIR", "news")
+VIEWS_FILE = os.environ.get("VIEWS_FILE", "views.json")
+
+# اطمینان از وجود پوشه اخبار
+os.makedirs(NEWS_DIR, exist_ok=True)
+
 
 # ---------- مدیریت بازدیدها ----------
 def load_views():
     if os.path.exists(VIEWS_FILE):
-        with open(VIEWS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(VIEWS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return {}
     return {}
 
+
 def save_views(views):
-    with open(VIEWS_FILE, "w", encoding="utf-8") as f:
-        json.dump(views, f, ensure_ascii=False, indent=2)
+    try:
+        with open(VIEWS_FILE, "w", encoding="utf-8") as f:
+            json.dump(views, f, ensure_ascii=False, indent=2)
+    except IOError as e:
+        print(f"خطا در ذخیره بازدیدها: {e}")
+
 
 def increment_view(slug):
     views = load_views()
@@ -27,34 +40,45 @@ def increment_view(slug):
     save_views(views)
     return views[slug]
 
+
 # ---------- پارس کردن فایل خبر ----------
 def parse_news_file(filename):
     path = os.path.join(NEWS_DIR, filename)
     with open(path, "r", encoding="utf-8") as f:
-        soup = BeautifulSoup(f.read(), "html.parser")
+        raw = f.read()
 
-    title = soup.title.string.strip() if soup.title and soup.title.string else filename
+    soup = BeautifulSoup(raw, "html.parser")
+
+    # عنوان: اول h1، بعد title، بعد نام فایل
+    title = filename
     h1 = soup.find("h1")
-    if h1:
+    if h1 and h1.get_text(strip=True):
         title = h1.get_text(strip=True)
+    elif soup.title and soup.title.string:
+        title = soup.title.string.strip()
 
     # خلاصه: اولین پاراگراف
     p = soup.find("p")
     summary = p.get_text(strip=True) if p else ""
 
-    # تصویر
+    # تصویر: اولین img
     img = soup.find("img")
-    image = img["src"] if img and img.has_attr("src") else None
+    image = None
+    if img and img.has_attr("src"):
+        image = img["src"]
 
-    # تاریخ از نام فایل: YYYY-MM-DD-xxx.html
+    # تاریخ: از نام فایل YYYY-MM-DD-xxx.html، وگرنه تاریخ تغییر فایل
     m = re.match(r"(\d{4}-\d{2}-\d{2})", filename)
     if m:
-        date = datetime.strptime(m.group(1), "%Y-%m-%d")
+        try:
+            date = datetime.strptime(m.group(1), "%Y-%m-%d")
+        except ValueError:
+            date = datetime.fromtimestamp(os.path.getmtime(path))
     else:
         date = datetime.fromtimestamp(os.path.getmtime(path))
 
     return {
-        "slug": filename.replace(".html", ""),
+        "slug": filename[:-5] if filename.endswith(".html") else filename,
         "filename": filename,
         "title": title,
         "summary": summary,
@@ -64,30 +88,38 @@ def parse_news_file(filename):
         "content": str(soup.body) if soup.body else str(soup),
     }
 
-# ---------- گرفتن همه خبر ها ----------
+
+# ---------- گرفتن همه اخبار ----------
 def get_all_news():
     if not os.path.exists(NEWS_DIR):
         return []
     files = [f for f in os.listdir(NEWS_DIR) if f.endswith(".html")]
-    news_list = [parse_news_file(f) for f in files]
+    news_list = []
+    for f in files:
+        try:
+            news_list.append(parse_news_file(f))
+        except Exception as e:
+            print(f"خطا در پارس {f}: {e}")
     news_list.sort(key=lambda x: x["date"], reverse=True)
     return news_list
 
-# ---------- روت ها ----------
+
+# ---------- محاسبه اخبار داغ ----------
+def get_hot_news(news_list, views, limit=5):
+    hot = sorted(
+        news_list,
+        key=lambda n: views.get(n["slug"], 0),
+        reverse=True
+    )[:limit]
+    return [n for n in hot if views.get(n["slug"], 0) > 0]
+
+
+# ---------- روت‌ها ----------
 @app.route("/")
 def index():
     news_list = get_all_news()
     views = load_views()
-
-    # اخبار داغ = 5 خبر پربازدید
-    hot_news = sorted(
-        news_list,
-        key=lambda n: views.get(n["slug"], 0),
-        reverse=True
-    )[:5]
-    # فیلتر خبرهایی که حداقل یک بازدید دارند
-    hot_news = [n for n in hot_news if views.get(n["slug"], 0) > 0]
-
+    hot_news = get_hot_news(news_list, views)
     return render_template(
         "index.html",
         news_list=news_list,
@@ -98,6 +130,10 @@ def index():
 
 @app.route("/news/<slug>")
 def news_detail(slug):
+    # جلوگیری از path traversal
+    if "/" in slug or "\\" in slug or ".." in slug:
+        abort(404)
+
     filename = slug + ".html"
     path = os.path.join(NEWS_DIR, filename)
     if not os.path.exists(path):
@@ -105,15 +141,10 @@ def news_detail(slug):
 
     news = parse_news_file(filename)
     view_count = increment_view(slug)
+
     news_list = get_all_news()
     views = load_views()
-
-    hot_news = sorted(
-        news_list,
-        key=lambda n: views.get(n["slug"], 0),
-        reverse=True
-    )[:5]
-    hot_news = [n for n in hot_news if views.get(n["slug"], 0) > 0]
+    hot_news = get_hot_news(news_list, views)
 
     return render_template(
         "news.html",
@@ -124,7 +155,7 @@ def news_detail(slug):
     )
 
 
-# ---------- API برای AJAX (اختیاری) ----------
+# ---------- API ----------
 @app.route("/api/news")
 def api_news():
     news_list = get_all_news()
@@ -144,8 +175,7 @@ def api_news():
 def api_hot():
     news_list = get_all_news()
     views = load_views()
-    hot = sorted(news_list, key=lambda n: views.get(n["slug"], 0), reverse=True)[:5]
-    hot = [n for n in hot if views.get(n["slug"], 0) > 0]
+    hot = get_hot_news(news_list, views)
     return jsonify([
         {
             "slug": n["slug"],
@@ -156,5 +186,13 @@ def api_hot():
     ])
 
 
+# ---------- Health check برای Render ----------
+@app.route("/health")
+def health():
+    return {"status": "ok"}, 200
+
+
+# ---------- اجرا ----------
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
