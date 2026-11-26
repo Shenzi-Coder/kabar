@@ -2,14 +2,20 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>{{ news.title }} - سایت خبری</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.title }} | AvaNews</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header>
-    <a href="{{ url_for('index') }}" class="back-link">⬅ بازگشت به صفحه اصلی</a>
-    <h1>📰 سایت خبری من</h1>
+    <div class="header-inner">
+        <a href="{{ url_for('index') }}" class="logo">
+            <span class="logo-icon">📡</span>
+            <span class="logo-text">Ava<span class="logo-accent">News</span></span>
+        </a>
+        <a href="{{ url_for('index') }}" class="back-link">⬅ بازگشت به صفحه اصلی</a>
+    </div>
 </header>
 
 <div class="container">
@@ -23,6 +29,9 @@
             </div>
             <div class="article-content">
                 {{ news.content | safe }}
+            </div>
+            <div class="article-actions">
+                <a href="{{ url_for('index') }}" class="btn-back">🏠 بازگشت به صفحه اصلی</a>
             </div>
         </article>
     </main>
@@ -47,7 +56,10 @@
 </div>
 
 <footer>
-    <p>© 2024 سایت خبری - تمامی حقوق محفوظ است</p>
+    <div class="footer-inner">
+        <span class="footer-logo">📡 Ava<span class="logo-accent">News</span></span>
+        <p>© 2024 AvaNews - تمامی حقوق محفوظ است</p>
+    </div>
 </footer>
 
 </body>
