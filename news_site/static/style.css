@@ -11,30 +11,98 @@ body {
     line-height: 1.7;
 }
 
+/* ---------- هدر ---------- */
 header {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: #fff;
-    padding: 25px 20px;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    padding: 22px 20px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
 }
 
-header h1 { font-size: 28px; }
-.subtitle { opacity: 0.85; font-size: 14px; margin-top: 5px; }
+header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(231,76,60,0.25), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
 
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- لوگو ---------- */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.3s;
+}
+.logo:hover { transform: scale(1.05); }
+
+.logo-icon {
+    font-size: 30px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.logo-accent {
+    color: #e74c3c;
+    font-weight: 900;
+}
+
+.subtitle {
+    opacity: 0.85;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+/* ---------- لینک بازگشت ---------- */
 .back-link {
     display: inline-block;
     color: #fff;
     text-decoration: none;
-    background: rgba(255,255,255,0.2);
-    padding: 6px 14px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 8px;
     font-size: 14px;
     transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.2);
 }
-.back-link:hover { background: rgba(255,255,255,0.35); }
+.back-link:hover {
+    background: rgba(231,76,60,0.8);
+    border-color: #e74c3c;
+    transform: translateX(-3px);
+}
 
+/* ---------- لی‌اوت ---------- */
 .container {
     max-width: 1200px;
     margin: 30px auto;
@@ -46,19 +114,21 @@ header h1 { font-size: 28px; }
 
 @media (max-width: 900px) {
     .container { grid-template-columns: 1fr; }
+    .logo-text { font-size: 22px; }
 }
 
+/* ---------- عنوان بخش‌ها ---------- */
 .section-title {
     font-size: 22px;
     margin-bottom: 15px;
-    color: #1e3c72;
+    color: #203a43;
     border-right: 5px solid #e74c3c;
     padding-right: 10px;
 }
 
 .hot-title { color: #e74c3c; }
 
-/* کارت اخبار */
+/* ---------- کارت اخبار ---------- */
 .news-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -75,17 +145,21 @@ header h1 { font-size: 28px; }
     transition: transform 0.25s, box-shadow 0.25s;
     display: flex;
     flex-direction: column;
+    border: 1px solid #eef0f4;
 }
 .news-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-color: #e74c3c;
 }
 
 .card-img img {
     width: 100%;
     height: 160px;
     object-fit: cover;
+    transition: transform 0.4s;
 }
+.news-card:hover .card-img img { transform: scale(1.05); }
 
 .card-body {
     padding: 14px;
@@ -97,7 +171,7 @@ header h1 { font-size: 28px; }
 .card-body h3 {
     font-size: 17px;
     margin-bottom: 8px;
-    color: #1e3c72;
+    color: #203a43;
     line-height: 1.4;
 }
 
@@ -117,13 +191,14 @@ header h1 { font-size: 28px; }
     padding-top: 8px;
 }
 
-/* اخبار داغ */
+/* ---------- اخبار داغ ---------- */
 .hot-list {
     list-style: none;
     background: #fff;
     border-radius: 12px;
     padding: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #eef0f4;
 }
 
 .hot-list li { margin-bottom: 8px; }
@@ -141,10 +216,10 @@ header h1 { font-size: 28px; }
 .hot-list a:hover { background: #fff3f3; }
 
 .hot-badge {
-    background: #e74c3c;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
     color: #fff;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -152,6 +227,7 @@ header h1 { font-size: 28px; }
     font-size: 13px;
     font-weight: bold;
     flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(231,76,60,0.4);
 }
 
 .hot-text {
@@ -164,20 +240,23 @@ header h1 { font-size: 28px; }
     font-size: 12px;
     color: #e74c3c;
     white-space: nowrap;
+    font-weight: 600;
 }
 
-/* صفحه جزئیات خبر */
+/* ---------- صفحه جزئیات خبر ---------- */
 .full-news {
     background: #fff;
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #eef0f4;
 }
 
 .article-title {
     font-size: 28px;
-    color: #1e3c72;
+    color: #203a43;
     margin-bottom: 15px;
+    line-height: 1.4;
 }
 
 .article-meta {
@@ -199,20 +278,65 @@ header h1 { font-size: 28px; }
     border-radius: 8px;
     margin: 15px 0;
 }
+.article-content h2, .article-content h3 {
+    color: #203a43;
+    margin: 20px 0 10px;
+}
 
-/* حالت خالی */
+.article-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.btn-back {
+    display: inline-block;
+    background: linear-gradient(135deg, #203a43, #2c5364);
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: 0.3s;
+    box-shadow: 0 4px 12px rgba(32,58,67,0.3);
+}
+.btn-back:hover {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(231,76,60,0.4);
+}
+
+/* ---------- حالت خالی ---------- */
 .empty {
     color: #999;
     font-style: italic;
     padding: 15px;
     text-align: center;
+    grid-column: 1 / -1;
 }
 
+/* ---------- فوتر ---------- */
 footer {
     text-align: center;
-    padding: 20px;
+    padding: 25px 20px;
     color: #888;
     font-size: 13px;
-    margin-top: 30px;
-    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+    background: #203a43;
+    color: #ccc;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-logo {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
 }
