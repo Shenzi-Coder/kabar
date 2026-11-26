@@ -2,14 +2,20 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>سایت خبری</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AvaNews | آخرین اخبار</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header>
-    <h1>📰 سایت خبری من</h1>
-    <p class="subtitle">آخرین اخبار و داغ‌ترین‌ها</p>
+    <div class="header-inner">
+        <a href="{{ url_for('index') }}" class="logo">
+            <span class="logo-icon">📡</span>
+            <span class="logo-text">Ava<span class="logo-accent">News</span></span>
+        </a>
+        <p class="subtitle">آخرین اخبار و داغ‌ترین‌ها</p>
+    </div>
 </header>
 
 <div class="container">
@@ -23,7 +29,7 @@
             <a class="news-card" href="{{ url_for('news_detail', slug=n.slug) }}">
                 {% if n.image %}
                 <div class="card-img">
-                    <img src="{{ n.image }}" alt="{{ n.title }}">
+                    <img src="{{ n.image }}" alt="{{ n.title }}" loading="lazy">
                 </div>
                 {% endif %}
                 <div class="card-body">
@@ -62,7 +68,10 @@
 </div>
 
 <footer>
-    <p>© 2024 سایت خبری - تمامی حقوق محفوظ است</p>
+    <div class="footer-inner">
+        <span class="footer-logo">📡 Ava<span class="logo-accent">News</span></span>
+        <p>© 2024 AvaNews - تمامی حقوق محفوظ است</p>
+    </div>
 </footer>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
