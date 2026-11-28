@@ -21,6 +21,13 @@
 <div class="container">
 
     <main class="main-col">
+        
+        <!-- بنر 90x728 بالای صفحه خبر (در موبایل مخفی می‌شود) -->
+        <div class="ad-box ad-banner-top desktop-only">
+            <span class="ad-label">تبلیغات</span>
+            <div id="mediaad-lYqaM"></div>
+        </div>
+
         <article class="full-news">
             <h1 class="article-title">{{ news.title }}</h1>
             <div class="article-meta">
@@ -30,6 +37,13 @@
             <div class="article-content">
                 {{ news.content | safe }}
             </div>
+            
+            <!-- بنر 300x200 پایین خبر -->
+            <div class="ad-box" style="margin-top: 30px;">
+                <span class="ad-label">تبلیغات</span>
+                <div id="mediaad-DAq54"></div>
+            </div>
+
             <div class="article-actions">
                 <a href="{{ url_for('index') }}" class="btn-back">🏠 بازگشت به صفحه اصلی</a>
             </div>
@@ -38,7 +52,7 @@
 
     <aside class="side-col">
         
-        <!-- جایگاه تبلیغاتی تبیسل -->
+        <!-- جایگاه تبلیغاتی قبلی -->
         <div class="ad-box">
             <span class="ad-label">تبلیغات</span>
             <div id="mediaad-X2V91"></div>
@@ -58,6 +72,13 @@
             <li class="empty">هنوز خبر داغی وجود ندارد</li>
             {% endfor %}
         </ul>
+
+        <!-- همسان ویدیو -->
+        <div class="ad-box" style="margin-top: 25px;">
+            <span class="ad-label">تبلیغات</span>
+            <div id="mediaad-OnMl7"></div>
+        </div>
+
     </aside>
 
 </div>
